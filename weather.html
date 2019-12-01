@@ -1,0 +1,304 @@
+<html>
+
+<head>
+    <!-- 
+        Solemont
+        coord: 47.344257 , 6.705269
+        https://www.infoclimat.fr/public-api/gfs/json?_ll=47.344257,6.705269&_auth=VkwDFFQqXH4DLgA3UyULIlA4UmdbLQIlBnpXNFg9VisGbQdmVDRUMgBuVitTfFVjByoObVtgCTlUPwJ6CnhWN1Y8A29UP1w7A2wAZVN8CyBQflIzW3sCJQZsVzJYK1Y0BmEHYlQpVDcAbFYyU31VYAcxDm9bewkuVDYCYApgVjVWPANuVDBcPANsAGFTfAsgUGZSZls1AjkGbVczWGFWNgYxB2ZUZFQwAG1WM1N9VWAHNw5oW2MJN1QxAmMKZVYqVioDHlREXCMDLAAgUzYLeVB%2BUmdbOgJu&_c=54020d0db736d80c9a4c882e198062f2 
+        https://www.infoclimat.fr/api-previsions-meteo.html?id=2988507&cntry=FR
+
+        02:00
+        05:00
+        08:00
+        11:00
+        14:00
+        17:00
+        20:00
+        23:00
+    -->
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="weather.css">
+    <script type="text/javascript">
+        async function getData() {
+            const weatherResponse = await fetch('https://www.infoclimat.fr/public-api/gfs/json?_ll=47.344257,6.705269&_auth=VkwDFFQqXH4DLgA3UyULIlA4UmdbLQIlBnpXNFg9VisGbQdmVDRUMgBuVitTfFVjByoObVtgCTlUPwJ6CnhWN1Y8A29UP1w7A2wAZVN8CyBQflIzW3sCJQZsVzJYK1Y0BmEHYlQpVDcAbFYyU31VYAcxDm9bewkuVDYCYApgVjVWPANuVDBcPANsAGFTfAsgUGZSZls1AjkGbVczWGFWNgYxB2ZUZFQwAG1WM1N9VWAHNw5oW2MJN1QxAmMKZVYqVioDHlREXCMDLAAgUzYLeVB%2BUmdbOgJu&_c=54020d0db736d80c9a4c882e198062f2');
+            const weatherAllData = await weatherResponse.json();
+            console.log(JSON.stringify(weatherAllData));
+
+            const bankResponse = await fetch('../Bankroute/bankroute.json');
+            const bankrouteData = await bankResponse.json();
+//            const bankrouteData = { "currentBalance": 534, "deltaLast30days": -13 };
+            console.log(JSON.stringify(bankrouteData));
+
+            let minTemp1 = 0;
+            let maxShower1 = 0;
+            let maxStormShower1 = 0;
+            let cloudPercent1 = 0;
+            let snow1 = false;
+            let time1 = '';
+
+            let minTemp2 = 0;
+            let maxShower2 = 0;
+            let maxStormShower2 = 0;
+            let cloudPercent2 = 0;
+            let snow2 = false;
+            let time2 = '';
+
+            let now = new Date();
+            let tzOffset = -now.getTimezoneOffset() / 60;
+            let currentHour = now.getHours();
+            if (currentHour < 8) {
+                // Morning
+                let eight = getDataForAnHour(6 + tzOffset, weatherAllData);
+                let eleven = getDataForAnHour(9 + tzOffset, weatherAllData);
+                // Afternoon
+                let fourteen = getDataForAnHour(12 + tzOffset, weatherAllData);
+                let seventeen = getDataForAnHour(15 + tzOffset, weatherAllData);
+
+                minTemp1 = getMinTempCelsius(eight, eleven);
+                maxShower1 = getMaxShowerMM(eight, eleven);
+                maxStormShower1 = getMaxStormShowerMM(eight, eleven);
+                cloudPercent1 = getCloudPercent(eight, eleven);
+                snow1 = getSnow(eight, eleven);
+                time1 = 'MORNING';
+
+                minTemp2 = getMinTempCelsius(fourteen, seventeen);
+                maxShower2 = getMaxShowerMM(fourteen, seventeen);
+                maxStormShower2 = getMaxStormShowerMM(fourteen, seventeen);
+                cloudPercent2 = getCloudPercent(fourteen, seventeen);
+                snow2 = getSnow(fourteen, seventeen);
+                time2 = 'AFTERNOON';
+
+            } else if (currentHour < 18) {
+                // Afternoon
+                let fourteen = getDataForAnHour(12 + tzOffset, weatherAllData);
+                let seventeen = getDataForAnHour(15 + tzOffset, weatherAllData);
+                // Night
+                let twentyThree = getDataForAnHour(21 + tzOffset, weatherAllData);
+                let two = getDataForAnHour(24 + tzOffset, weatherAllData);
+                let five = getDataForAnHour(24 + 3 + tzOffset, weatherAllData);
+
+                minTemp1 = getMinTempCelsius(fourteen, seventeen);
+                maxShower1 = getMaxShowerMM(fourteen, seventeen);
+                maxStormShower1 = getMaxStormShowerMM(fourteen, seventeen);
+                cloudPercent1 = getCloudPercent(fourteen, seventeen);
+                snow1 = getSnow(fourteen, seventeen);
+                time1 = 'AFTERNOON';
+
+                minTemp2 = getMinTempCelsius(twentyThree, two, five);
+                maxShower2 = getMaxShowerMM(twentyThree, two, five);
+                maxStormShower2 = getMaxStormShowerMM(twentyThree, two, five);
+                cloudPercent2 = getCloudPercent(twentyThree, two, five);
+                snow2 = getSnow(twentyThree, two, five);
+                time2 = 'NIGHT';
+
+            } else {
+                // Night
+                let twentyThree = getDataForAnHour(21 + tzOffset, weatherAllData);
+                let two = getDataForAnHour(24 + tzOffset, weatherAllData);
+                let five = getDataForAnHour(24 + 3 + tzOffset, weatherAllData);
+                // Tomorow morning
+                let eight = getDataForAnHour(24 + 6 + tzOffset, weatherAllData);
+                let eleven = getDataForAnHour(24 + 9 + tzOffset, weatherAllData);
+
+                minTemp1 = getMinTempCelsius(twentyThree, two, five);
+                maxShower1 = getMaxShowerMM(twentyThree, two, five);
+                maxStormShower1 = getMaxStormShowerMM(twentyThree, two, five);
+                cloudPercent1 = getCloudPercent(twentyThree, two, five);
+                snow1 = getSnow(twentyThree, two, five);
+                time1 = 'NIGHT';
+
+                minTemp2 = getMinTempCelsius(eight, eleven);
+                maxShower2 = getMaxShowerMM(eight, eleven);
+                maxStormShower2 = getMaxStormShowerMM(eight, eleven);
+                cloudPercent2 = getCloudPercent(eight, eleven);
+                snow2 = getSnow(eight, eleven);
+                time2 = 'MORNING';
+            }
+
+            displaySky(1, time1, minTemp1, maxShower1, maxStormShower1, cloudPercent1, snow1);
+            displaySky(2, time2, minTemp2, maxShower2, maxStormShower2, cloudPercent2, snow2);
+
+            displayBankroute(bankrouteData.currentBalance, bankrouteData.deltaLast30days);
+
+            setInterval(toggleDisplay, 30000);
+        }
+
+        function toggleDisplay() {
+            let divBankroute = document.querySelector('.bankroute');
+            let divWeather = document.querySelector('.weather');
+            divWeather.classList.toggle('hidden');
+            divWeather.classList.toggle('visible');
+            divBankroute.classList.toggle('hidden');
+            divBankroute.classList.toggle('visible');
+        }
+
+        function displayBankroute(currentBalance, deltaLast30days) {
+            let divBankroute = document.querySelector('.bankroute');
+            let divSky = divBankroute.querySelector('.sky');
+            let divDelta = divBankroute.querySelector('.delta');
+
+            divDelta.innerHTML = Math.round(deltaLast30days) + '€';
+            if (deltaLast30days < 0) {
+                divDelta.className += " negative"
+            } else {
+                divDelta.className += " positive";
+            }
+
+            if (currentBalance >= 1000 && deltaLast30days > 500) {
+                divSky.className += " sunny";
+            } else if (currentBalance >= 1000 && deltaLast30days > 250) {
+                divSky.className += " sunClouds";
+            } else if (currentBalance >= 1000 && deltaLast30days >= 0) {
+                divSky.className += " heavyClouds";
+            } else if (currentBalance >= 1000) {
+                divSky.className += " lightRain";
+            } else if (currentBalance >= 600) {
+                divSky.className += " heavyRain";
+            } else {
+                divSky.className += " storm";
+            }
+
+
+        }
+
+        function getDataForAnHour(hour, weatherAllData) {
+            let today = new Date();
+            today.setHours(hour);
+            today.setMinutes(0);
+            today.setSeconds(0);
+            let y = today.getFullYear();
+            let M = String(today.getMonth() + 1).padStart(2, '0')
+            let d = String(today.getDate()).padStart(2, '0')
+            let h = String(today.getHours()).padStart(2, '0')
+            let dateString = `${y}-${M}-${d} ${h}:00:00`;
+
+            return weatherAllData[dateString];
+        }
+
+        function getMinTempCelsius(...multipleData) {
+            const minTemp = multipleData.map(el => el.temperature['2m']).reduce((acc, curr) => Math.min(acc, curr), +Infinity);
+            return minTemp - 273.15;
+        }
+
+        function getMaxShowerMM(...multipleData) {
+            const maxShower = multipleData.map(el => el.pluie).reduce((acc, curr) => Math.max(acc, curr), -Infinity);
+            return maxShower;
+        }
+
+        function getMaxStormShowerMM(...multipleData) {
+            const maxStormShower = multipleData.map(el => el.pluie_convective).reduce((acc, curr) => Math.max(acc, curr), -Infinity);
+            return maxStormShower;
+        }
+
+        function getCloudPercent(...multipleData) {
+            const cloudHighPercent = multipleData.map(el => el.nebulosite.haute).reduce((acc, curr) => Math.max(acc, curr), -Infinity);
+            const cloudMediumPercent = multipleData.map(el => el.nebulosite.moyenne).reduce((acc, curr) => Math.max(acc, curr), -Infinity);
+            return Math.max(cloudHighPercent, cloudMediumPercent);
+        }
+
+        function getSnow(...multipleData) {
+            const snow = multipleData.map(el => el.risque_neige).reduce((acc, curr) => acc || curr == 'oui', false);
+            return snow;
+        }
+
+
+        function displaySky(index, time, minTempCelsius, maxShowerMM, maxStormShowerMM, cloudPercent, snow) {
+            let divTemp = document.querySelector(`#temp${index}`);
+            divTemp.querySelector('.value').innerHTML = Math.round(minTempCelsius);
+            let divSky = document.getElementById(`sky${index}`);
+
+            let divTime = document.getElementById(`time${index}`);
+
+            let shower = 'NONE';
+            if (maxStormShowerMM > 5) {
+                shower = 'STORM';
+            } else if (maxShowerMM > 10) {
+                shower = 'SHOWER';
+            } else if (maxShowerMM > 0.1) {
+                shower = 'LIGHT_SHOWER';
+            }
+
+            let cloud = 'NONE';
+            if (cloudPercent > 80) {
+                cloud = 'HEAVY_CLOUD';
+            } else if (cloudPercent > 25) {
+                cloud = 'CLOUDY';
+            }
+
+            switch (time) {
+                case 'MORNING':
+                    divTime.className += " morning";
+                    break;
+                case 'AFTERNOON':
+                    divTime.className += " afternoon";
+                    break;
+                case 'NIGHT':
+                    divTime.className += " night";
+                    break;
+            }
+            guessWeather(divSky, time, shower, cloud, snow);
+
+            divSky.innerHTML = `
+                <span class="tooltip">
+                    maxShower=${maxShowerMM}mm
+                    maxStormShower=${maxStormShowerMM}mm
+                    cloud=${cloudPercent}%
+                    snow=${snow}
+                </span>
+                `;
+        }
+
+        function guessWeather(divSky, time, shower, cloud, snow) {
+            if (shower == 'NONE' && cloud == 'NONE' && time != 'NIGHT') {
+                divSky.className += " sunny";
+            } else if (shower == 'NONE' && cloud == 'NONE' && time == 'NIGHT') {
+                divSky.className += " clearNight";
+            } else if (shower == 'NONE' && cloud == 'CLOUDY') {
+                divSky.className += " clouds";
+            } else if (shower == 'NONE' && cloud == 'HEAVY_CLOUD') {
+                divSky.className += " heavyClouds";
+            } else if (shower == 'LIGHT_SHOWER' && !snow && cloud == 'NONE' && time != 'NIGHT') {
+                divSky.className += " dayVariable";
+            } else if (shower == 'LIGHT_SHOWER' && !snow && cloud == 'NONE' && time == 'NIGHT') {
+                divSky.className += " nightVariable";
+            } else if (shower == 'LIGHT_SHOWER' && snow && cloud == 'NONE' && time != 'NIGHT') {
+                divSky.className += " dayVariableSnow";
+            } else if (shower == 'LIGHT_SHOWER' && snow && cloud == 'NONE' && time == 'NIGHT') {
+                divSky.className += " nightVariableSnow";
+            } else if (shower == 'LIGHT_SHOWER' && !snow && cloud != 'NONE') {
+                divSky.className += " lightRain";
+            } else if (shower == 'LIGHT_SHOWER' && snow && cloud != 'NONE') {
+                divSky.className += " lightSnow";
+            } else if (shower == 'STORM' && !snow) {
+                divSky.className += " storm";
+            } 
+        }
+
+    </script>
+</head>
+
+<body onload="getData()">
+    <div class="bankroute hidden">
+        <div class="sky"></div>
+        <div class="delta"></div>
+    </div>
+    <div class="weather visible">
+        <div id="time1" class="time">
+            <div id="sky1" class="sky hasTooltip"></div>
+            <div id="temp1" class="temperature">
+                <div class="value"></div>
+                <div class="unit">°C</div>
+            </div>
+        </div>
+
+        <div id="time2" class="time">
+            <div id="sky2" class="sky hasTooltip"></div>
+            <div id="temp2" class="temperature">
+                <div class="value"></div>
+                <div class="unit">°C</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,187 @@
+.hasTooltip:hover .tooltip {
+    display: block;
+}
+
+.tooltip {
+    display: none;
+    background: #C8C8C8;
+    margin-left: 28px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1000;
+    width: 200px;
+    height: 100px;
+}
+
+body {
+    margin : 0;
+}
+
+.bankroute {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    min-width: 100%;
+    background-color: darkgreen;
+}
+
+.delta {
+    flex: 20;
+    font-size: 20vh;
+    font-family: sans-serif;
+    text-align: center;
+    text-shadow:    0 1px 0 #ccc,
+                    0 2px 0 #c9c9c9,
+                    0 3px 0 #bbb,
+                    0 4px 0 #b9b9b9,
+                    0 5px 0 #aaa,
+                    0 6px 1px rgba(0,0,0,.1),
+                    0 0 5px rgba(0,0,0,.1),
+                    0 1px 3px rgba(0,0,0,.3),
+                    0 3px 5px rgba(0,0,0,.2),
+                    0 5px 10px rgba(0,0,0,.25),
+                    0 10px 10px rgba(0,0,0,.2),
+                    0 20px 20px rgba(0,0,0,.15);
+}
+
+.positive {
+    color: white;
+}
+
+.negative {
+    color: red;
+}
+
+.weather {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    flex-direction: row;
+    min-height: 100%;
+    min-width: 100%;
+}
+
+.time {
+    display: flex;
+    flex-direction: column;
+    text-shadow:    0 1px 0 #ccc,
+                    0 2px 0 #c9c9c9,
+                    0 3px 0 #bbb,
+                    0 4px 0 #b9b9b9,
+                    0 5px 0 #aaa,
+                    0 6px 1px rgba(0,0,0,.1),
+                    0 0 5px rgba(0,0,0,.1),
+                    0 1px 3px rgba(0,0,0,.3),
+                    0 3px 5px rgba(0,0,0,.2),
+                    0 5px 10px rgba(0,0,0,.25),
+                    0 10px 10px rgba(0,0,0,.2),
+                    0 20px 20px rgba(0,0,0,.15);
+}
+
+.sky {
+    flex: 80;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+.temperature {
+    flex: 20;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.temperature .value {
+    font-size: 20vh;
+}
+
+.temperature .unit {
+    margin-top: 2vh;
+    font-size: 10vh;
+}
+
+.afternoon {
+    background-color: blue;
+    flex: 1;
+    color: white;
+}
+
+.morning {
+    background-color: skyblue;
+    flex: 1;
+    color: black;
+}
+
+.night {
+    background-color: midnightblue;
+    flex: 1;
+    color: white;
+}
+
+.dayVariable {
+    background-image: url('./DayVariable.png');
+}
+
+.dayVariableSnow {
+    background-image: url('./DayVariableSnow.png');
+}
+
+.nightVariable {
+    background-image: url('./NightVariable.png');
+}
+
+.nightVariableSnow {
+    background-image: url('./NightVariableSnow.png');
+}
+
+.clouds {
+    background-image: url('./LightClouds.png');
+}
+
+.heavyClouds {
+    background-image: url('./HeavyClouds.png');
+}
+
+.lightRain {
+    background-image: url('./LightRain.png');
+}
+
+.lightSnow {
+    background-image: url('./LightSnow.png');
+}
+
+.heavyRain {
+    background-image: url('./HeavyRain.png');
+}
+
+.sunny {
+    background-image: url('./Sun.png');
+}
+
+.clearNight {
+    background-image: url('./Moon.png');
+}
+
+.sunClouds {
+    background-image: url('./SunCloud.png');
+}
+
+.storm {
+    background-image: url('./Storm.png');
+}
+
+.visible {
+    opacity: 1;
+    transition: opacity 2s ease;
+ }
+
+.hidden {
+    opacity: 0;
+    transition: opacity 2s ease;
+ }
